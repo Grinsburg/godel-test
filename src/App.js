@@ -22,12 +22,12 @@ class App extends Component {
   }
 
   componentDidMount() {
-    const shuffledAnswerOptions = quizQuestions.map(question =>
+    const answerOptions = quizQuestions.map(question =>
       this.shuffleArray(question.answers)
     );
     this.setState({
       question: quizQuestions[0].question,
-      answerOptions: shuffledAnswerOptions[0]
+      answerOptions: answerOptions[0]
     });
   }
 
@@ -48,16 +48,6 @@ class App extends Component {
     return array;
   }
 
-  handleAnswerSelected(event) {
-    this.setUserAnswer(event.currentTarget.value);
-
-    if (this.state.questionId < quizQuestions.length) {
-      setTimeout(() => this.setNextQuestion(), 300);
-    } else {
-      setTimeout(() => this.setResults(this.getResults()), 300);
-    }
-  }
-
   setUserAnswer(answer) {
     this.setState((state, props) => ({
       answersCount: {
@@ -66,6 +56,16 @@ class App extends Component {
       },
       answer: answer
     }));
+  }
+
+  handleAnswerSelected(event) {
+    this.setUserAnswer(event.currentTarget.value);
+
+    if (this.state.questionId < quizQuestions.length) {
+      setTimeout(() => this.setNextQuestion(), 300);
+    } else {
+      setTimeout(() => this.setResults(this.getResults()), 300);
+    }
   }
 
   setNextQuestion() {
@@ -99,29 +99,32 @@ class App extends Component {
   }
 
   renderQuiz() {
+    const {answer, answerOptions, questionId, question, length } = this.state;
     return (
       <Quiz
-        answer={this.state.answer}
-        answerOptions={this.state.answerOptions}
-        questionId={this.state.questionId}
-        question={this.state.question}
-        questionTotal={quizQuestions.length}
+        answer={answer}
+        answerOptions={answerOptions}
+        questionId={questionId}
+        question={question}
+        questionTotal={length}
         onAnswerSelected={this.handleAnswerSelected}
       />
     );
   }
 
   renderResult() {
-    return <Result quizResult={this.state.result} />;
+    const { result } = this.state;
+    return <Result quizResult={result} />;
   }
 
   render() {
+    const {result} = this.state;
     return (
       <div className="App">
         <div className="App-header">
           <h2>Викторина</h2>
         </div>
-        {this.state.result ? this.renderResult() : this.renderQuiz()}
+        {result ? this.renderResult() : this.renderQuiz()}
       </div>
     );
   }
